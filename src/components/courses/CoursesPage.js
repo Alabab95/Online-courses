@@ -1,4 +1,8 @@
 import React from "react";
+import { connect } from "react-redux";
+import * as courseActions from "../../redux/actions/courseActions";
+import PropTypes from "prop-types";
+import { bindActionCreators } from "redux";
 
 class CoursesPage extends React.Component {
   state = {
@@ -14,6 +18,7 @@ class CoursesPage extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
+    this.props.actions.createCourse(this.state.course);
   };
 
   render() {
@@ -25,10 +30,29 @@ class CoursesPage extends React.Component {
           type="text"
           onChange={this.handleChange}
           value={this.state.course.title}
-        ></input>
+        />
+        <input type="submit" value="Save" />
+        {this.props.courses.map((course) => (
+          <div key={course.title}>{course.title}</div>
+        ))}
       </form>
     );
   }
 }
 
-export default CoursesPage;
+CoursesPage.PropTypes = {
+  actions: PropTypes.object.isRequired,
+  courses: PropTypes.array.isRequired,
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(courseActions, dispatch),
+  };
+}
+function mapStateToProps(state) {
+  return {
+    courses: state.courses,
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(CoursesPage);
